@@ -10,7 +10,7 @@
 | **live** | `false` until Brandon lists on the shop |
 | **sale product / toolId** | `quote-invoice` |
 | **shop PR owner** | Groundwork |
-| **checkout gate** | Default ON after desk #43; set `NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false` to disable |
+| **checkout gate** | Default ON after desk #43; set `NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false|0|off` to disable |
 
 ## Notes
 

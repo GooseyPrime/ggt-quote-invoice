@@ -30,7 +30,7 @@ const LOCAL_SESSION = "local";
  * Body: { url, product: "quote-invoice", toolId: "quote-invoice" }
  *
  * NEVER falls through to seo-audit / accessibility. Desk #43 lists quote-invoice.
- * Default ON; set NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false to refuse here.
+ * Default ON; set NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false|0|off to refuse here.
  */
 export async function startSale(returnUrl?: string): Promise<SaleResult> {
   if (!quoteInvoiceSaleLive()) {
@@ -38,7 +38,7 @@ export async function startSale(returnUrl?: string): Promise<SaleResult> {
       ok: false,
       code: "sku_not_live",
       message:
-        "Checkout for Quote & Invoice is not live on the shop sale desk yet. Unlimited free quotes still work. We will not route you through a different shop product (that would charge the wrong price).",
+        "Checkout for Quote & Invoice is currently disabled for this deployment. Unlimited free quotes still work. We will not route you through a different shop product (that would charge the wrong price).",
     };
   }
 

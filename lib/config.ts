@@ -41,7 +41,7 @@ export function priceLabel(env: Env = publicEnv()): string {
 
 /**
  * Desk allowlist includes quote-invoice (shop #43).
- * Default ON. Set NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false to disable.
+ * Default ON. Set NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false|0|off to disable.
  * NEVER fall through to seo-audit / accessibility pricing.
  * Shop registry live stays false until Brandon lists.
  */

@@ -14,7 +14,7 @@ describe("shop gate", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.code).toBe("sku_not_live");
-      expect(result.message.toLowerCase()).toContain("not live");
+      expect(result.message.toLowerCase()).toContain("disabled");
     }
   });
 
@@ -26,6 +26,14 @@ describe("shop gate", () => {
     vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "false");
     const mod = await import("../lib/config");
     expect(mod.quoteInvoiceSaleLive()).toBe(false);
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "0");
+    const modZero = await import("../lib/config");
+    expect(modZero.quoteInvoiceSaleLive()).toBe(false);
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "off");
+    const modOff = await import("../lib/config");
+    expect(modOff.quoteInvoiceSaleLive()).toBe(false);
   });
 
   it("priceLabel defaults to $9", async () => {
