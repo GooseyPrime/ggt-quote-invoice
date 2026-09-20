@@ -19,6 +19,7 @@ describe("shop gate", () => {
   });
 
   it("quoteInvoiceSaleLive defaults on and can be turned off", async () => {
+    vi.resetModules();
     vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "");
     const { quoteInvoiceSaleLive } = await import("../lib/config");
     expect(quoteInvoiceSaleLive()).toBe(true);
