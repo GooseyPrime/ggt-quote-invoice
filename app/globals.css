@@ -1,0 +1,336 @@
+@import "ggt-design-kit/src/index.css";
+
+:root {
+  /* Moss — Quote & Invoice accent */
+  --ggt-accent: #7d9b7a;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+.qinv-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 20px;
+}
+
+.qinv-nav__link {
+  color: var(--ggt-mist);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.qinv-nav__link:hover,
+.qinv-nav__link:focus-visible {
+  color: var(--ggt-accent);
+}
+
+.qinv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.qinv-btn--ghost {
+  background: transparent;
+  color: var(--ggt-paper);
+  border: 1px solid var(--ggt-hairline);
+}
+
+.qinv-banner {
+  margin-bottom: 20px;
+}
+
+.qinv-banner__title {
+  margin: 0 0 6px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ggt-accent);
+}
+
+.qinv-banner__body {
+  margin: 0;
+}
+
+.qinv-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.qinv-list li {
+  border-top: 1px solid var(--ggt-hairline);
+  padding: 14px 0;
+}
+
+.qinv-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.qinv-list a {
+  color: var(--ggt-paper);
+  text-decoration: none;
+}
+
+.qinv-list a:hover {
+  color: var(--ggt-accent);
+}
+
+.qinv-meta {
+  margin: 4px 0 0;
+  color: var(--ggt-mist);
+  font-size: 0.92rem;
+}
+
+.qinv-field {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.qinv-label {
+  color: var(--ggt-mist);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qinv-grid {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .qinv-grid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .qinv-grid--3 {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+.qinv-textarea {
+  min-height: 88px;
+  padding: 14px 16px;
+  border: 1px solid var(--ggt-hairline);
+  border-radius: var(--ggt-radius-md, 8px);
+  background: var(--ggt-ink);
+  color: var(--ggt-paper);
+  font: inherit;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.qinv-textarea:focus-visible,
+.ggt-input:focus-visible {
+  outline: 2px solid var(--ggt-accent);
+  outline-offset: 2px;
+}
+
+.qinv-line {
+  padding: 12px 0;
+  border-top: 1px solid var(--ggt-hairline);
+}
+
+.qinv-totals {
+  margin-top: 16px;
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.qinv-totals strong {
+  color: var(--ggt-accent);
+  font-size: 1.1rem;
+}
+
+.qinv-error {
+  margin-top: 12px;
+  color: #e8a090;
+  font-size: 0.95rem;
+}
+
+.qinv-note {
+  margin-top: 10px;
+  color: var(--ggt-mist);
+  font-size: 0.95rem;
+}
+
+.qinv-empty {
+  margin-top: 16px;
+  color: var(--ggt-mist);
+}
+
+.qinv-logo-preview {
+  max-width: 160px;
+  max-height: 64px;
+  object-fit: contain;
+  margin-top: 8px;
+  border: 1px solid var(--ggt-hairline);
+  border-radius: 6px;
+  background: #fff;
+  padding: 6px;
+}
+
+/* —— Print / PDF —— */
+.qinv-print {
+  background: #fff;
+  color: #111;
+  min-height: 100vh;
+  padding: 24px 20px 48px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.qinv-print__sheet {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.qinv-print__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.qinv-print__brand {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.qinv-print__brand img {
+  max-width: 120px;
+  max-height: 56px;
+  object-fit: contain;
+}
+
+.qinv-print__brand-meta {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #333;
+}
+
+.qinv-print__brand-meta strong {
+  display: block;
+  font-size: 16px;
+  color: #111;
+  margin-bottom: 2px;
+}
+
+.qinv-print h1 {
+  margin: 0 0 4px;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+
+.qinv-print__status {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+  color: #666;
+  margin: 0 0 20px;
+}
+
+.qinv-print__parties {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 560px) {
+  .qinv-print__parties {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.qinv-print__label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 0 0 4px;
+}
+
+.qinv-print table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.qinv-print th,
+.qinv-print td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px 6px;
+  text-align: left;
+}
+
+.qinv-print th:last-child,
+.qinv-print td:last-child,
+.qinv-print th.num,
+.qinv-print td.num {
+  text-align: right;
+}
+
+.qinv-print__totals {
+  margin-top: 16px;
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  font-size: 14px;
+}
+
+.qinv-print__notes {
+  margin-top: 28px;
+  font-size: 13px;
+  color: #444;
+  white-space: pre-wrap;
+}
+
+.qinv-print__footer-free {
+  margin-top: 40px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  font-size: 8pt;
+  color: #999;
+  text-align: center;
+}
+
+.qinv-print__footer-paid {
+  margin-top: 40px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  font-size: 11px;
+  color: #444;
+}
+
+@media print {
+  .qinv-print__toolbar,
+  .no-print {
+    display: none !important;
+  }
+
+  .qinv-print {
+    padding: 0;
+  }
+
+  body {
+    background: #fff;
+  }
+}
