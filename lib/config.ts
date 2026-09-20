@@ -56,8 +56,12 @@ export function shouldOfferPaywall(unlocked: boolean, count: number): boolean {
   return !unlocked && count >= PAYWALL_AFTER_QUOTES;
 }
 
+export function appPath(path = "/"): string {
+  return path.startsWith("/") ? path : `/${path}`;
+}
+
 export function toolPath(path = "/"): string {
-  const nextPath = path.startsWith("/") ? path : `/${path}`;
+  const nextPath = appPath(path);
   return nextPath === "/" ? TOOL_PATH : `${TOOL_PATH}${nextPath}`;
 }
 

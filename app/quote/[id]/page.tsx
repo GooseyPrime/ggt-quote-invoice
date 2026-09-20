@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Nav } from "@/components/Nav";
 import { Paywall } from "@/components/Paywall";
-import { shouldOfferPaywall, toolPath } from "@/lib/config";
+import { appPath, shouldOfferPaywall } from "@/lib/config";
 import { createId } from "@/lib/ids";
 import {
   formatMoney,
@@ -46,7 +46,7 @@ export default function QuoteEditorPage() {
         const saved = saveQuote(found).doc;
         setDoc(saved);
         setReady(true);
-        router.replace(toolPath(`/quote/${saved.id}`));
+        router.replace(appPath(`/quote/${saved.id}`));
       } catch {
         setDoc(found);
         setReady(true);
@@ -137,7 +137,7 @@ export default function QuoteEditorPage() {
     if (!window.confirm("Delete this document from this browser?")) return;
     try {
       deleteQuote(doc.id);
-      router.push(toolPath("/"));
+      router.push(appPath("/"));
     } catch {
       setSavedFlash(false);
       setSaveError("Could not update this document in this browser.");
@@ -160,7 +160,7 @@ export default function QuoteEditorPage() {
         <div className="ggt-wrap">
           <Nav />
           <p className="qinv-empty">Document not found.</p>
-          <Link href={toolPath("/")} className="ggt-btn">
+          <Link href={appPath("/")} className="ggt-btn">
             Back to list
           </Link>
         </div>
@@ -333,7 +333,7 @@ export default function QuoteEditorPage() {
                 Convert to invoice
               </button>
             ) : null}
-            <Link href={toolPath(`/print/${doc.id}`)} className="ggt-btn qinv-btn--ghost">
+            <Link href={appPath(`/print/${doc.id}`)} className="ggt-btn qinv-btn--ghost">
               Print / PDF
             </Link>
             <button

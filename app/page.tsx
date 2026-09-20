@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { BackupBanner } from "@/components/BackupBanner";
 import { Nav } from "@/components/Nav";
 import { Paywall } from "@/components/Paywall";
-import { shouldOfferPaywall, toolPath } from "@/lib/config";
+import { appPath, shouldOfferPaywall, toolPath } from "@/lib/config";
 import { formatMoney, grandTotal } from "@/lib/money";
 import {
   createBlankQuote,
@@ -78,7 +78,7 @@ export default function HomePage() {
             <ul className="qinv-list">
               {docs.map((doc) => (
                 <li key={doc.id}>
-                  <Link href={toolPath(`/quote/${doc.id}`)}>
+                  <Link href={appPath(`/quote/${doc.id}`)}>
                     <strong>{doc.title || "Untitled"}</strong>
                   </Link>
                   <p className="qinv-meta">
@@ -89,7 +89,7 @@ export default function HomePage() {
                   </p>
                   <div className="qinv-actions">
                     <Link
-                      href={toolPath(`/print/${doc.id}`)}
+                      href={appPath(`/print/${doc.id}`)}
                       className="ggt-btn qinv-btn--ghost"
                     >
                       Print / PDF

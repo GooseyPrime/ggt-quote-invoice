@@ -105,4 +105,25 @@ describe("shop gate", () => {
     expect(result.paid).toBe(false);
     expect(result.kind).toBe("shop_error");
   });
+
+  it("does not unlock rejected verification results", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            ok: false,
+            paid: true,
+            paymentStatus: "no_payment_required",
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+    const { verifySale } = await import("../lib/shop");
+    const result = await verifySale("sess_123");
+    expect(result.ok).toBe(false);
+    expect(result.paid).toBe(false);
+  });
 });

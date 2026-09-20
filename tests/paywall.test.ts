@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PAYWALL_AFTER_QUOTES, shouldOfferPaywall, toolPath } from "../lib/config";
+import { PAYWALL_AFTER_QUOTES, appPath, shouldOfferPaywall, toolPath } from "../lib/config";
 
 describe("paywall gating", () => {
   it("stays hidden below the save threshold", () => {
@@ -17,5 +17,10 @@ describe("paywall gating", () => {
   it("builds routes under the mounted tool base path", () => {
     expect(toolPath("/")).toBe("/tools/quote-invoice");
     expect(toolPath("/quote/doc_1")).toBe("/tools/quote-invoice/quote/doc_1");
+  });
+
+  it("keeps Next.js navigation app-relative", () => {
+    expect(appPath("/")).toBe("/");
+    expect(appPath("/settings")).toBe("/settings");
   });
 });
