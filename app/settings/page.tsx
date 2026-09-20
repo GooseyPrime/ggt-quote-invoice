@@ -23,15 +23,16 @@ function fileToDataUrl(file: File): Promise<string> {
 }
 
 export default function SettingsPage() {
-  const [paid, setPaid] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
   const [profile, setProfile] = useState<BusinessProfile>(emptyBusiness());
   const [count, setCount] = useState(0);
   const [ready, setReady] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
   const label = priceLabel();
+  const showUpgradeOffer = !unlocked && shouldOfferPaywall(unlocked, count);
 
   useEffect(() => {
-    setPaid(isUnlocked());
+    setUnlocked(isUnlocked());
     setProfile(getBusiness());
     setCount(quoteCount());
     setReady(true);
@@ -89,16 +90,16 @@ export default function SettingsPage() {
           <p className="ggt-eyebrow">Settings</p>
           <h1>Business profile</h1>
           <p className="ggt-lede">
-            {paid
+            {unlocked
               ? "Your logo and details replace the free footer on print/PDF."
               : `Unlock once (${label}) to brand print/PDF with your logo and details.`}
           </p>
         </header>
 
-        {!paid && shouldOfferPaywall(paid, count) ? <Paywall /> : null}
+        {showUpgradeOffer ? <Paywall /> : null}
 
         <section className="ggt-result">
-          {!paid ? (
+          {!unlocked ? (
             <p className="qinv-note">
               Save your business details now. Unlock once to add a logo and use
               them on print/PDF.
@@ -139,7 +140,7 @@ export default function SettingsPage() {
               />
             </label>
           </div>
-          {paid ? (
+          {unlocked ? (
             <>
               <label className="qinv-field">
                 <span className="qinv-label">Logo (file → data URL)</span>
@@ -173,7 +174,7 @@ export default function SettingsPage() {
             <button type="button" className="ggt-btn" onClick={onSave}>
               Save profile
             </button>
-            {paid ? (
+            {unlocked ? (
               <button
                 type="button"
                 className="ggt-btn qinv-btn--ghost"
