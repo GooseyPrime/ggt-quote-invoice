@@ -36,4 +36,60 @@ describe("shop gate", () => {
     expect(TOOL_PATH).toBe("/tools/quote-invoice");
     expect(ACCENT).toBe("#7d9b7a");
   });
+
+  it("passes the unlock return url through checkout", async () => {
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "true");
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body));
+      expect(body.url).toBe("https://tool.example/tools/quote-invoice/unlock");
+      expect(body.returnUrl).toBe("https://tool.example/tools/quote-invoice/unlock");
+      return new Response(
+        JSON.stringify({ ok: true, url: "https://shop.example/checkout/session" }),
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const { startSale } = await import("../lib/shop");
+    const result = await startSale("https://tool.example/tools/quote-invoice/unlock");
+    expect(result.ok).toBe(true);
+  });
+
+  it("does not allow local unlock in production", async () => {
+    vi.stubEnv("NEXT_PUBLIC_ALLOW_LOCAL_UNLOCK", "true");
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    const { verifySale } = await import("../lib/shop");
+    const result = await verifySale("local");
+    expect(result.ok).toBe(false);
+    expect(result.paid).toBe(false);
+    expect(result.kind).not.toBe("local_unlock");
+  });
+
+  it("retries verification with POST after a failing GET", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ ok: true, paid: true }), { status: 500 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ ok: true, paid: true }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const { verifySale } = await import("../lib/shop");
+    const result = await verifySale("sess_123");
+    expect(result.ok).toBe(true);
+    expect(result.paid).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("returns a failed verification result when both verification calls fail", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    const { verifySale } = await import("../lib/shop");
+    const result = await verifySale("sess_123");
+    expect(result.ok).toBe(false);
+    expect(result.paid).toBe(false);
+    expect(result.kind).toBe("shop_error");
+  });
 });

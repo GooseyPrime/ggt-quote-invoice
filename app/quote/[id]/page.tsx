@@ -33,6 +33,7 @@ export default function QuoteEditorPage() {
 
   const [doc, setDoc] = useState<QuoteDoc | null>(null);
   const [savedFlash, setSavedFlash] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [ready, setReady] = useState(false);
 
@@ -41,8 +42,13 @@ export default function QuoteEditorPage() {
     let found = getQuote(id);
     if (!found && id === "new") {
       found = createBlankQuote();
-      saveQuote(found);
-      router.replace(`/quote/${found.id}`);
+      try {
+        saveQuote(found);
+        router.replace(`/quote/${found.id}`);
+      } catch {
+        setDoc(found);
+        setReady(true);
+      }
       return;
     }
     setDoc(found);
@@ -94,9 +100,18 @@ export default function QuoteEditorPage() {
 
   function onSave() {
     if (!doc) return;
+    setSaveError(null);
     const before = quoteCount();
     const had = Boolean(getQuote(doc.id));
-    const { isNew } = saveQuote(doc);
+    let isNew = false;
+    try {
+      ({ isNew } = saveQuote(doc));
+    } catch {
+      setSavedFlash(false);
+      setShowPaywall(false);
+      setSaveError("Could not save this document in this browser.");
+      return;
+    }
     setSavedFlash(true);
     window.setTimeout(() => setSavedFlash(false), 1600);
 
@@ -115,16 +130,26 @@ export default function QuoteEditorPage() {
 
   function onConvert() {
     if (!doc) return;
-    saveQuote(doc);
-    const next = convertToInvoice(doc.id);
-    if (next) setDoc(next);
+    try {
+      saveQuote(doc);
+      const next = convertToInvoice(doc.id);
+      if (next) setDoc(next);
+    } catch {
+      setSavedFlash(false);
+      setSaveError("Could not save this document in this browser.");
+    }
   }
 
   function onDelete() {
     if (!doc) return;
     if (!window.confirm("Delete this document from this browser?")) return;
-    deleteQuote(doc.id);
-    router.push("/");
+    try {
+      deleteQuote(doc.id);
+      router.push("/");
+    } catch {
+      setSavedFlash(false);
+      setSaveError("Could not update this document in this browser.");
+    }
   }
 
   if (!ready) {
@@ -328,6 +353,7 @@ export default function QuoteEditorPage() {
             </button>
           </div>
           {savedFlash ? <p className="qinv-note">Saved on this device.</p> : null}
+          {saveError ? <p className="qinv-error">{saveError}</p> : null}
         </section>
 
         {showPaywall ? <Paywall /> : null}

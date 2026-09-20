@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { Nav } from "@/components/Nav";
 import { Paywall } from "@/components/Paywall";
-import { priceLabel } from "@/lib/config";
+import { PAYWALL_AFTER_QUOTES, priceLabel } from "@/lib/config";
 import {
   emptyBusiness,
   getBusiness,
   isUnlocked,
+  quoteCount,
   saveBusiness,
 } from "@/lib/storage";
 import type { BusinessProfile } from "@/lib/types";
@@ -24,6 +25,7 @@ function fileToDataUrl(file: File): Promise<string> {
 export default function SettingsPage() {
   const [paid, setPaid] = useState(false);
   const [profile, setProfile] = useState<BusinessProfile>(emptyBusiness());
+  const [count, setCount] = useState(0);
   const [ready, setReady] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
   const label = priceLabel();
@@ -31,6 +33,7 @@ export default function SettingsPage() {
   useEffect(() => {
     setPaid(isUnlocked());
     setProfile(getBusiness());
+    setCount(quoteCount());
     setReady(true);
   }, []);
 
@@ -39,8 +42,12 @@ export default function SettingsPage() {
   }
 
   function onSave() {
-    saveBusiness(profile);
-    setFlash("Business profile saved on this device.");
+    try {
+      saveBusiness(profile);
+      setFlash("Business profile saved on this device.");
+    } catch {
+      setFlash("Could not save your business profile in this browser.");
+    }
   }
 
   async function onLogoFile(file: File | null) {
@@ -77,7 +84,7 @@ export default function SettingsPage() {
           </p>
         </header>
 
-        {!paid ? <Paywall /> : null}
+        {!paid && count >= PAYWALL_AFTER_QUOTES ? <Paywall /> : null}
 
         {paid ? (
           <section className="ggt-result">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { priceLabel } from "@/lib/config";
+import { priceLabel, toolUrl } from "@/lib/config";
 import { startSale } from "@/lib/shop";
 
 type Props = {
@@ -20,9 +20,7 @@ export function Paywall({ open = true }: Props) {
     setBusy(true);
     setError(null);
     const result = await startSale(
-      typeof window !== "undefined"
-        ? `${window.location.origin}/unlock`
-        : undefined,
+      typeof window !== "undefined" ? toolUrl("/unlock", window.location.origin) : undefined,
     );
     setBusy(false);
     if (!result.ok) {

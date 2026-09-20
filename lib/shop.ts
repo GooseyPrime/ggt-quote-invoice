@@ -1,9 +1,9 @@
 import {
   TOOL_ID,
-  TOOL_URL,
   allowLocalUnlock,
   quoteInvoiceSaleLive,
   shopOrigin,
+  toolUrl,
 } from "./config";
 
 export type SaleResult =
@@ -47,9 +47,7 @@ export async function startSale(returnUrl?: string): Promise<SaleResult> {
     if (allowLocalUnlock()) {
       const next = new URL(
         returnUrl ??
-          (typeof window !== "undefined"
-            ? `${window.location.origin}/unlock`
-            : "/unlock"),
+          (typeof window !== "undefined" ? toolUrl("/unlock", window.location.origin) : "/unlock"),
       );
       next.searchParams.set("session_id", LOCAL_SESSION);
       return { ok: true, checkoutUrl: next.toString(), sessionId: LOCAL_SESSION };
@@ -61,8 +59,10 @@ export async function startSale(returnUrl?: string): Promise<SaleResult> {
     };
   }
 
+  const checkoutUrl = returnUrl?.trim() || toolUrl("/unlock");
   const body = JSON.stringify({
-    url: TOOL_URL,
+    url: checkoutUrl,
+    returnUrl: checkoutUrl,
     product: TOOL_ID,
     toolId: TOOL_ID,
   });
@@ -107,27 +107,40 @@ export async function verifySale(sessionId: string): Promise<VerifyResult> {
 
   const getUrl = new URL(`${origin}/api/verify`);
   getUrl.searchParams.set("session_id", sessionId);
-  const getRes = await fetch(getUrl.toString(), {
+  const getResult = await requestVerify(getUrl.toString(), sessionId, {
     method: "GET",
     headers: { Accept: "application/json" },
   });
-  const getBody = await readJson(getRes);
-  if (isVerifyShape(getBody)) return normalizeVerify(getBody, sessionId);
+  if (getResult) return getResult;
 
-  const postRes = await fetch(`${origin}/api/verify`, {
+  const postResult = await requestVerify(`${origin}/api/verify`, sessionId, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ sessionId, session_id: sessionId }),
   });
-  const postBody = await readJson(postRes);
-  if (isVerifyShape(postBody)) return normalizeVerify(postBody, sessionId);
+  if (postResult) return postResult;
 
   return {
     ok: false,
     paid: false,
-    kind: "invalid_response",
-    message: "The shop did not confirm this sale.",
+    kind: "shop_error",
+    message: "The shop could not verify this sale.",
   };
+}
+
+async function requestVerify(
+  url: string,
+  sessionId: string,
+  init: RequestInit,
+): Promise<VerifyResult | null> {
+  try {
+    const res = await fetch(url, init);
+    if (!res.ok) return null;
+    const body = await readJson(res);
+    return isVerifyShape(body) ? normalizeVerify(body, sessionId) : null;
+  } catch {
+    return null;
+  }
 }
 
 async function postSale(url: string, body: string): Promise<SaleResult> {

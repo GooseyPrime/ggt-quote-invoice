@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { BackupBanner } from "@/components/BackupBanner";
 import { Nav } from "@/components/Nav";
 import { Paywall } from "@/components/Paywall";
-import { PAYWALL_AFTER_QUOTES } from "@/lib/config";
+import { PAYWALL_AFTER_QUOTES, toolPath } from "@/lib/config";
 import { formatMoney, grandTotal } from "@/lib/money";
 import {
   createBlankQuote,
@@ -35,8 +35,12 @@ export default function HomePage() {
 
   function onNew() {
     const blank = createBlankQuote();
-    saveQuote(blank);
-    window.location.href = `/quote/${blank.id}`;
+    try {
+      saveQuote(blank);
+      window.location.href = toolPath(`/quote/${blank.id}`);
+    } catch {
+      window.alert("Could not create a new quote in this browser.");
+    }
   }
 
   const showPaywall = ready && !unlocked && count >= PAYWALL_AFTER_QUOTES;

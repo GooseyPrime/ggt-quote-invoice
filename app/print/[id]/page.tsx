@@ -81,23 +81,6 @@ export default function PrintPage() {
           </Link>
         </div>
 
-        {hasBrand ? (
-          <header className="qinv-print__brand">
-            {business.logoDataUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={business.logoDataUrl} alt="" />
-            ) : null}
-            <div className="qinv-print__brand-meta">
-              {business.name ? <strong>{business.name}</strong> : null}
-              {business.address ? (
-                <div style={{ whiteSpace: "pre-wrap" }}>{business.address}</div>
-              ) : null}
-              {business.email ? <div>{business.email}</div> : null}
-              {business.phone ? <div>{business.phone}</div> : null}
-            </div>
-          </header>
-        ) : null}
-
         <h1>{doc.title || "Untitled"}</h1>
         <p className="qinv-print__status">
           {doc.status === "invoice" ? "Invoice" : "Quote"} · {doc.date}
@@ -166,12 +149,18 @@ export default function PrintPage() {
 
         {paid && hasBrand ? (
           <footer className="qinv-print__footer-paid">
-            {business.name ? <strong>{business.name}</strong> : null}
-            {(business.email || business.phone) && (
-              <div>
-                {[business.email, business.phone].filter(Boolean).join(" · ")}
-              </div>
-            )}
+            {business.logoDataUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={business.logoDataUrl} alt="" />
+            ) : null}
+            <div className="qinv-print__brand-meta">
+              {business.name ? <strong>{business.name}</strong> : null}
+              {business.address ? (
+                <div style={{ whiteSpace: "pre-wrap" }}>{business.address}</div>
+              ) : null}
+              {business.email ? <div>{business.email}</div> : null}
+              {business.phone ? <div>{business.phone}</div> : null}
+            </div>
           </footer>
         ) : (
           <footer className="qinv-print__footer-free">{FREE_PRINT_FOOTER}</footer>

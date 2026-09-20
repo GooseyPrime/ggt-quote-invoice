@@ -51,5 +51,18 @@ export function quoteInvoiceSaleLive(env: Env = publicEnv()): boolean {
 }
 
 export function allowLocalUnlock(env: Env = publicEnv()): boolean {
-  return env.NEXT_PUBLIC_ALLOW_LOCAL_UNLOCK === "true";
+  return env.NEXT_PUBLIC_ALLOW_LOCAL_UNLOCK === "true" && process.env.NODE_ENV !== "production";
+}
+
+export function toolPath(path = "/"): string {
+  const nextPath = path.startsWith("/") ? path : `/${path}`;
+  return nextPath === "/" ? TOOL_PATH : `${TOOL_PATH}${nextPath}`;
+}
+
+export function toolUrl(path = "/", origin = TOOL_URL): string {
+  const base = origin.replace(/\/$/, "");
+  if (base === TOOL_URL) {
+    return path === "/" ? base : `${base}${path.startsWith("/") ? path : `/${path}`}`;
+  }
+  return `${base}${toolPath(path)}`;
 }

@@ -19,35 +19,42 @@ function UnlockInner() {
     let cancelled = false;
 
     async function run() {
-      if (isUnlocked()) {
-        if (!cancelled) {
-          setStatus("ok");
-          setMessage("This device is already unlocked.");
+      try {
+        if (isUnlocked()) {
+          if (!cancelled) {
+            setStatus("ok");
+            setMessage("This device is already unlocked.");
+          }
+          return;
         }
-        return;
-      }
-      if (!sessionId) {
+        if (!sessionId) {
+          if (!cancelled) {
+            setStatus("err");
+            setMessage("Missing session_id from the shop return URL.");
+          }
+          return;
+        }
+        if (!cancelled) setStatus("working");
+        const result = await verifySale(sessionId);
+        if (cancelled) return;
+        if (result.ok && result.paid) {
+          setUnlocked(result.sessionId ?? sessionId);
+          setStatus("ok");
+          setMessage(
+            "Paid unlock saved on this device. Add your logo and business details in Settings — they appear on print/PDF instead of the free footer.",
+          );
+          return;
+        }
+        setStatus("err");
+        setMessage(
+          result.message ?? "The shop did not confirm payment for this session.",
+        );
+      } catch {
         if (!cancelled) {
           setStatus("err");
-          setMessage("Missing session_id from the shop return URL.");
+          setMessage("Could not save or verify this unlock on this device.");
         }
-        return;
       }
-      if (!cancelled) setStatus("working");
-      const result = await verifySale(sessionId);
-      if (cancelled) return;
-      if (result.ok && result.paid) {
-        setUnlocked(result.sessionId ?? sessionId);
-        setStatus("ok");
-        setMessage(
-          "Paid unlock saved on this device. Add your logo and business details in Settings — they appear on print/PDF instead of the free footer.",
-        );
-        return;
-      }
-      setStatus("err");
-      setMessage(
-        result.message ?? "The shop did not confirm payment for this session.",
-      );
     }
 
     void run();

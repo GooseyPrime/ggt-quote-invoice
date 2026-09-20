@@ -28,7 +28,11 @@ function readJson<T>(key: string, fallback: T): T {
 
 function writeJson(key: string, value: unknown): void {
   if (!canUseStorage()) return;
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    throw new Error("Could not save data in this browser.");
+  }
 }
 
 export function emptyBusiness(): BusinessProfile {
@@ -56,7 +60,7 @@ export function emptyLineItem(): LineItem {
 
 export function createBlankQuote(): QuoteDoc {
   const now = new Date().toISOString();
-  const today = now.slice(0, 10);
+  const today = localDateString(new Date());
   return {
     id: createId("doc"),
     status: "quote",
@@ -163,17 +167,89 @@ export function importBackup(payload: BackupPayload): void {
   if (!payload || payload.version !== 1) {
     throw new Error("Unsupported backup format.");
   }
-  writeJson(QUOTES_KEY, Array.isArray(payload.quotes) ? payload.quotes : []);
-  writeJson(
-    UNLOCK_KEY,
-    payload.unlock && typeof payload.unlock === "object"
-      ? payload.unlock
-      : emptyUnlock(),
-  );
-  writeJson(
-    BUSINESS_KEY,
-    payload.business && typeof payload.business === "object"
-      ? payload.business
-      : emptyBusiness(),
-  );
+  writeJson(QUOTES_KEY, sanitizeQuotes(payload.quotes));
+  writeJson(UNLOCK_KEY, sanitizeUnlock(payload.unlock));
+  writeJson(BUSINESS_KEY, sanitizeBusiness(payload.business));
+}
+
+function sanitizeQuotes(value: unknown): QuoteDoc[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry) => sanitizeQuote(entry))
+    .filter((entry): entry is QuoteDoc => entry !== null);
+}
+
+function sanitizeQuote(value: unknown): QuoteDoc | null {
+  if (!value || typeof value !== "object") return null;
+  const record = value as Record<string, unknown>;
+  const createdAt = asString(record.createdAt) ?? new Date().toISOString();
+  const updatedAt = asString(record.updatedAt) ?? createdAt;
+  const items = Array.isArray(record.items)
+    ? record.items
+        .map((item) => sanitizeLineItem(item))
+        .filter((item): item is LineItem => item !== null)
+    : [];
+
+  return {
+    id: asString(record.id) ?? createId("doc"),
+    status: record.status === "invoice" ? "invoice" : "quote",
+    title: asString(record.title) ?? "Untitled quote",
+    clientName: asString(record.clientName) ?? "",
+    clientEmail: asString(record.clientEmail) ?? "",
+    clientAddress: asString(record.clientAddress) ?? "",
+    date: asString(record.date) ?? localDateString(new Date()),
+    taxPercent: asNumber(record.taxPercent),
+    notes: asString(record.notes) ?? "",
+    items: items.length > 0 ? items : [emptyLineItem()],
+    createdAt,
+    updatedAt,
+  };
+}
+
+function sanitizeLineItem(value: unknown): LineItem | null {
+  if (!value || typeof value !== "object") return null;
+  const record = value as Record<string, unknown>;
+  return {
+    id: asString(record.id) ?? createId("line"),
+    description: asString(record.description) ?? "",
+    qty: asNumber(record.qty, 1),
+    unitPrice: asNumber(record.unitPrice),
+  };
+}
+
+function sanitizeUnlock(value: unknown): UnlockState {
+  if (!value || typeof value !== "object") return emptyUnlock();
+  const record = value as Record<string, unknown>;
+  return {
+    paid: record.paid === true,
+    sessionId: asString(record.sessionId),
+    unlockedAt: asString(record.unlockedAt),
+  };
+}
+
+function sanitizeBusiness(value: unknown): BusinessProfile {
+  if (!value || typeof value !== "object") return emptyBusiness();
+  const record = value as Record<string, unknown>;
+  return {
+    name: asString(record.name) ?? "",
+    address: asString(record.address) ?? "",
+    email: asString(record.email) ?? "",
+    phone: asString(record.phone) ?? "",
+    logoDataUrl: asString(record.logoDataUrl) ?? "",
+  };
+}
+
+function asString(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+function asNumber(value: unknown, fallback = 0): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function localDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
