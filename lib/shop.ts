@@ -1,8 +1,8 @@
 import {
   TOOL_ID,
   allowLocalUnlock,
+  configuredShopOrigin,
   quoteInvoiceSaleLive,
-  shopOrigin,
   toolUrl,
 } from "./config";
 
@@ -42,7 +42,7 @@ export async function startSale(returnUrl?: string): Promise<SaleResult> {
     };
   }
 
-  const origin = shopOrigin();
+  const origin = configuredShopOrigin();
   if (!origin) {
     if (allowLocalUnlock()) {
       const next = new URL(
@@ -84,7 +84,7 @@ export async function verifySale(sessionId: string): Promise<VerifyResult> {
     };
   }
 
-  const origin = shopOrigin();
+  const origin = configuredShopOrigin();
 
   if (allowLocalUnlock() && sessionId === LOCAL_SESSION) {
     return {

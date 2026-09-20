@@ -65,6 +65,19 @@ describe("shop gate", () => {
     expect(result.kind).not.toBe("local_unlock");
   });
 
+  it("does not use the local checkout fallback in production", async () => {
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "true");
+    vi.stubEnv("NEXT_PUBLIC_ALLOW_LOCAL_UNLOCK", "true");
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "");
+    const { startSale } = await import("../lib/shop");
+    const result = await startSale("http://localhost:3000/tools/quote-invoice/unlock");
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.code).toBe("unconfigured");
+    }
+  });
+
   it("retries verification with POST after a failing GET", async () => {
     vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
     const fetchMock = vi

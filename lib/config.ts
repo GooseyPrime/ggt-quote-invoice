@@ -35,6 +35,11 @@ export function shopOrigin(env: Env = publicEnv()): string {
   return raw.replace(/\/$/, "");
 }
 
+export function configuredShopOrigin(env: Env = publicEnv()): string | undefined {
+  const raw = env.NEXT_PUBLIC_SHOP_ORIGIN?.trim();
+  return raw ? raw.replace(/\/$/, "") : undefined;
+}
+
 /** Display label only — never hardcode the paid amount in UI copy. */
 export function priceLabel(env: Env = publicEnv()): string {
   const raw = env.NEXT_PUBLIC_PRICE_LABEL?.trim();
