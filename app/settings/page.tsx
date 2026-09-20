@@ -66,9 +66,12 @@ export default function SettingsPage() {
     if (!file) return;
     try {
       const dataUrl = await fileToDataUrl(file);
-      patch({ logoDataUrl: dataUrl });
+      const next = { ...profile, logoDataUrl: dataUrl };
+      setProfile(next);
+      saveBusiness(next);
+      setFlash("Business profile saved on this device.");
     } catch {
-      setFlash("Could not read that image.");
+      setFlash("Could not save that image in this browser.");
     }
   }
 

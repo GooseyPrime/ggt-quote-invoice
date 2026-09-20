@@ -44,6 +44,7 @@ export default function QuoteEditorPage() {
       found = createBlankQuote();
       try {
         saveQuote(found);
+        setDoc(found);
         setReady(true);
         router.replace(toolPath(`/quote/${found.id}`));
       } catch {
