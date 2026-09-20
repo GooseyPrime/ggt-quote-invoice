@@ -31,7 +31,7 @@ function UnlockInner() {
         if (!sessionId) {
           if (!cancelled) {
             setStatus("err");
-            setMessage("Missing session_id from the shop return URL.");
+            setMessage("This checkout return link is incomplete. Return from the shop checkout again.");
           }
           return;
         }

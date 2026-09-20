@@ -43,10 +43,10 @@ export default function QuoteEditorPage() {
     if (!found && id === "new") {
       found = createBlankQuote();
       try {
-        saveQuote(found);
-        setDoc(found);
+        const saved = saveQuote(found).doc;
+        setDoc(saved);
         setReady(true);
-        router.replace(toolPath(`/quote/${found.id}`));
+        router.replace(toolPath(`/quote/${saved.id}`));
       } catch {
         setDoc(found);
         setReady(true);
