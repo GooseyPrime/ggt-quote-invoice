@@ -29,8 +29,8 @@ const LOCAL_SESSION = "local";
  * Start checkout via shop POST /api/sale.
  * Body: { url, product: "quote-invoice", toolId: "quote-invoice" }
  *
- * NEVER falls through to seo-audit / accessibility. Until NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=true
- * (and the desk allowlist includes quote-invoice), refuse here.
+ * NEVER falls through to seo-audit / accessibility. Desk #43 lists quote-invoice.
+ * Default ON; set NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false to refuse here.
  */
 export async function startSale(returnUrl?: string): Promise<SaleResult> {
   if (!quoteInvoiceSaleLive()) {
