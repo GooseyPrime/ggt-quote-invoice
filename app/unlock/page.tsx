@@ -21,7 +21,7 @@ function UnlockInner() {
 
     async function run() {
       try {
-        if (isUnlocked()) {
+        if (isUnlocked() && !sessionId) {
           if (!cancelled) {
             setStatus("ok");
             setMessage("This device is already unlocked.");

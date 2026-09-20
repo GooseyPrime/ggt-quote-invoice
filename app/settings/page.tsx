@@ -43,8 +43,12 @@ export default function SettingsPage() {
   }
 
   function onSave() {
+    persistProfile(profile);
+  }
+
+  function persistProfile(next: BusinessProfile) {
     try {
-      saveBusiness(profile);
+      saveBusiness(next);
       setFlash("Business profile saved on this device.");
     } catch {
       setFlash("Could not save your business profile in this browser.");
@@ -54,12 +58,7 @@ export default function SettingsPage() {
   function onClearLogo() {
     const next = { ...profile, logoDataUrl: "" };
     setProfile(next);
-    try {
-      saveBusiness(next);
-      setFlash("Business profile saved on this device.");
-    } catch {
-      setFlash("Could not save your business profile in this browser.");
-    }
+    persistProfile(next);
   }
 
   async function onLogoFile(file: File | null) {
@@ -68,8 +67,7 @@ export default function SettingsPage() {
       const dataUrl = await fileToDataUrl(file);
       const next = { ...profile, logoDataUrl: dataUrl };
       setProfile(next);
-      saveBusiness(next);
-      setFlash("Business profile saved on this device.");
+      persistProfile(next);
     } catch {
       setFlash("Could not save that image in this browser.");
     }
@@ -159,7 +157,11 @@ export default function SettingsPage() {
                 <textarea
                   className="qinv-textarea"
                   value={profile.logoDataUrl}
-                  onChange={(e) => patch({ logoDataUrl: e.target.value })}
+                  onChange={(e) => {
+                    const next = { ...profile, logoDataUrl: e.target.value };
+                    setProfile(next);
+                    persistProfile(next);
+                  }}
                   placeholder="data:image/png;base64,…"
                 />
               </label>

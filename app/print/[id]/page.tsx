@@ -147,20 +147,24 @@ export default function PrintPage() {
           </div>
         ) : null}
 
-        {paid && hasBrand ? (
+        {paid ? (
           <footer className="qinv-print__footer-paid">
-            {business.logoDataUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={business.logoDataUrl} alt="" />
+            {hasBrand ? (
+              <>
+                {business.logoDataUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={business.logoDataUrl} alt="" />
+                ) : null}
+                <div className="qinv-print__brand-meta">
+                  {business.name ? <strong>{business.name}</strong> : null}
+                  {business.address ? (
+                    <div style={{ whiteSpace: "pre-wrap" }}>{business.address}</div>
+                  ) : null}
+                  {business.email ? <div>{business.email}</div> : null}
+                  {business.phone ? <div>{business.phone}</div> : null}
+                </div>
+              </>
             ) : null}
-            <div className="qinv-print__brand-meta">
-              {business.name ? <strong>{business.name}</strong> : null}
-              {business.address ? (
-                <div style={{ whiteSpace: "pre-wrap" }}>{business.address}</div>
-              ) : null}
-              {business.email ? <div>{business.email}</div> : null}
-              {business.phone ? <div>{business.phone}</div> : null}
-            </div>
           </footer>
         ) : (
           <footer className="qinv-print__footer-free">{FREE_PRINT_FOOTER}</footer>
