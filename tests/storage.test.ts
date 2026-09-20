@@ -122,4 +122,43 @@ describe("storage helpers", () => {
       }),
     ).toThrow("Could not save data in this browser.");
   });
+
+  it("rolls back a backup import when a later write fails", async () => {
+    const backing = new Map<string, string>([
+      ["ggt.quote-invoice.quotes.v1", JSON.stringify([{ id: "old", updatedAt: "2026-09-20T00:00:00.000Z" }])],
+      ["ggt.quote-invoice.unlock.v1", JSON.stringify({ paid: false })],
+      ["ggt.quote-invoice.business.v1", JSON.stringify({ name: "Old" })],
+    ]);
+    let writes = 0;
+    const localStorage = {
+      getItem(key: string) {
+        return backing.get(key) ?? null;
+      },
+      setItem(key: string, value: string) {
+        writes += 1;
+        if (writes === 2) throw new Error("quota");
+        backing.set(key, value);
+      },
+      removeItem(key: string) {
+        backing.delete(key);
+      },
+    };
+
+    vi.stubGlobal("window", {});
+    vi.stubGlobal("localStorage", localStorage);
+
+    const { importBackup } = await import("../lib/storage");
+    expect(() =>
+      importBackup({
+        version: 1,
+        exportedAt: "2026-09-20T00:00:00.000Z",
+        quotes: [],
+        unlock: { paid: true },
+        business: { name: "New", address: "", email: "", phone: "", logoDataUrl: "" },
+      }),
+    ).toThrow("Could not save data in this browser.");
+
+    expect(backing.get("ggt.quote-invoice.unlock.v1")).toBe(JSON.stringify({ paid: false }));
+    expect(backing.get("ggt.quote-invoice.business.v1")).toBe(JSON.stringify({ name: "Old" }));
+  });
 });

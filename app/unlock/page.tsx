@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Nav } from "@/components/Nav";
+import { toolPath } from "@/lib/config";
 import { verifySale } from "@/lib/shop";
 import { isUnlocked, setUnlocked } from "@/lib/storage";
 
@@ -82,10 +83,10 @@ function UnlockInner() {
           {status === "ok" ? <p>{message}</p> : null}
           {status === "err" ? <p className="qinv-error">{message}</p> : null}
           <div className="qinv-actions">
-            <Link href="/settings" className="ggt-btn">
+            <Link href={toolPath("/settings")} className="ggt-btn">
               Business settings
             </Link>
-            <Link href="/" className="ggt-btn qinv-btn--ghost">
+            <Link href={toolPath("/")} className="ggt-btn qinv-btn--ghost">
               Quotes
             </Link>
           </div>

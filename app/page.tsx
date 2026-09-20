@@ -78,7 +78,7 @@ export default function HomePage() {
             <ul className="qinv-list">
               {docs.map((doc) => (
                 <li key={doc.id}>
-                  <Link href={`/quote/${doc.id}`}>
+                  <Link href={toolPath(`/quote/${doc.id}`)}>
                     <strong>{doc.title || "Untitled"}</strong>
                   </Link>
                   <p className="qinv-meta">
@@ -88,7 +88,10 @@ export default function HomePage() {
                     {` · ${formatMoney(grandTotal(doc.items, doc.taxPercent))}`}
                   </p>
                   <div className="qinv-actions">
-                    <Link href={`/print/${doc.id}`} className="ggt-btn qinv-btn--ghost">
+                    <Link
+                      href={toolPath(`/print/${doc.id}`)}
+                      className="ggt-btn qinv-btn--ghost"
+                    >
                       Print / PDF
                     </Link>
                   </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { FREE_PRINT_FOOTER } from "@/lib/config";
+import { FREE_PRINT_FOOTER, toolPath } from "@/lib/config";
 import {
   formatMoney,
   grandTotal,
@@ -50,7 +50,7 @@ export default function PrintPage() {
     return (
       <div className="qinv-print">
         <p>Document not found.</p>
-        <Link href="/" className="no-print">
+        <Link href={toolPath("/")} className="no-print">
           Back
         </Link>
       </div>
@@ -73,10 +73,10 @@ export default function PrintPage() {
           <button type="button" className="ggt-btn" onClick={() => window.print()}>
             Print / Save PDF
           </button>
-          <Link href={`/quote/${doc.id}`} className="ggt-btn qinv-btn--ghost">
+          <Link href={toolPath(`/quote/${doc.id}`)} className="ggt-btn qinv-btn--ghost">
             Edit
           </Link>
-          <Link href="/" className="ggt-btn qinv-btn--ghost">
+          <Link href={toolPath("/")} className="ggt-btn qinv-btn--ghost">
             All quotes
           </Link>
         </div>

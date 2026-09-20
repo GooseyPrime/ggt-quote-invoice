@@ -167,9 +167,30 @@ export function importBackup(payload: BackupPayload): void {
   if (!payload || payload.version !== 1) {
     throw new Error("Unsupported backup format.");
   }
-  writeJson(QUOTES_KEY, sanitizeQuotes(payload.quotes));
-  writeJson(UNLOCK_KEY, sanitizeUnlock(payload.unlock));
-  writeJson(BUSINESS_KEY, sanitizeBusiness(payload.business));
+  const quotes = sanitizeQuotes(payload.quotes);
+  const unlock = sanitizeUnlock(payload.unlock);
+  const business = sanitizeBusiness(payload.business);
+  const previous =
+    canUseStorage()
+      ? {
+          quotes: localStorage.getItem(QUOTES_KEY),
+          unlock: localStorage.getItem(UNLOCK_KEY),
+          business: localStorage.getItem(BUSINESS_KEY),
+        }
+      : null;
+
+  try {
+    writeJson(QUOTES_KEY, quotes);
+    writeJson(UNLOCK_KEY, unlock);
+    writeJson(BUSINESS_KEY, business);
+  } catch (error) {
+    if (previous) {
+      restoreRaw(QUOTES_KEY, previous.quotes);
+      restoreRaw(UNLOCK_KEY, previous.unlock);
+      restoreRaw(BUSINESS_KEY, previous.business);
+    }
+    throw error;
+  }
 }
 
 function sanitizeQuotes(value: unknown): QuoteDoc[] {
@@ -252,4 +273,15 @@ function localDateString(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function restoreRaw(key: string, value: string | null): void {
+  if (!canUseStorage()) return;
+  try {
+    if (value === null) {
+      localStorage.removeItem(key);
+      return;
+    }
+    localStorage.setItem(key, value);
+  } catch {}
 }
