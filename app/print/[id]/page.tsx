@@ -143,7 +143,7 @@ export default function PrintPage() {
         {doc.notes ? (
           <div className="qinv-print__notes">
             <p className="qinv-print__label">Notes</p>
-            {doc.notes}
+            <div>{doc.notes}</div>
           </div>
         ) : null}
 

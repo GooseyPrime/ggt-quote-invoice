@@ -50,6 +50,17 @@ export default function SettingsPage() {
     }
   }
 
+  function onClearLogo() {
+    const next = { ...profile, logoDataUrl: "" };
+    setProfile(next);
+    try {
+      saveBusiness(next);
+      setFlash("Business profile saved on this device.");
+    } catch {
+      setFlash("Could not save your business profile in this browser.");
+    }
+  }
+
   async function onLogoFile(file: File | null) {
     if (!file) return;
     try {
@@ -166,9 +177,7 @@ export default function SettingsPage() {
               <button
                 type="button"
                 className="ggt-btn qinv-btn--ghost"
-                onClick={() => {
-                  patch({ logoDataUrl: "" });
-                }}
+                onClick={onClearLogo}
               >
                 Clear logo
               </button>

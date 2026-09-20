@@ -14,7 +14,6 @@ export const PAYWALL_AFTER_QUOTES = 3;
 export const FREE_PRINT_FOOTER =
   "Prepared with Golden Goose Tools · goldengoosetools.com";
 
-const DEFAULT_SHOP = "https://goldengoosetools.com";
 const DEFAULT_PRICE_LABEL = "$9";
 
 type Env = Record<string, string | undefined>;
@@ -27,12 +26,6 @@ function publicEnv(): Env {
       process.env.NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE,
     NEXT_PUBLIC_ALLOW_LOCAL_UNLOCK: process.env.NEXT_PUBLIC_ALLOW_LOCAL_UNLOCK,
   };
-}
-
-export function shopOrigin(env: Env = publicEnv()): string {
-  const raw = env.NEXT_PUBLIC_SHOP_ORIGIN?.trim();
-  if (!raw) return DEFAULT_SHOP;
-  return raw.replace(/\/$/, "");
 }
 
 export function configuredShopOrigin(env: Env = publicEnv()): string | undefined {
