@@ -40,12 +40,15 @@ export function priceLabel(env: Env = publicEnv()): string {
 }
 
 /**
- * Checkout is gated until Cos smoke-clears and Groundwork merges shop allowlist.
- * Set NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=true to enable.
+ * Desk allowlist includes quote-invoice (shop #43).
+ * Default ON. Set NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false|0|off to disable.
  * NEVER fall through to seo-audit / accessibility pricing.
+ * Shop registry live stays false until Brandon lists.
  */
 export function quoteInvoiceSaleLive(env: Env = publicEnv()): boolean {
-  return env.NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE === "true";
+  const raw = env.NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE?.trim().toLowerCase();
+  if (raw === "false" || raw === "0" || raw === "off") return false;
+  return true;
 }
 
 export function allowLocalUnlock(env: Env = publicEnv()): boolean {

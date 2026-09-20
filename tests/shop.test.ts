@@ -6,22 +6,35 @@ afterEach(() => {
 });
 
 describe("shop gate", () => {
-  it("refuses checkout when sale is not live (sku_not_live)", async () => {
-    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "");
+  it("refuses checkout when sale is explicitly off (sku_not_live)", async () => {
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "false");
     vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://goldengoosetools.com");
     const { startSale } = await import("../lib/shop");
     const result = await startSale("http://localhost:3000/unlock");
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.code).toBe("sku_not_live");
-      expect(result.message.toLowerCase()).toContain("not live");
+      expect(result.message.toLowerCase()).toContain("disabled");
     }
   });
 
-  it("quoteInvoiceSaleLive reads env flag", async () => {
-    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "true");
+  it("quoteInvoiceSaleLive defaults on and can be turned off", async () => {
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "");
     const { quoteInvoiceSaleLive } = await import("../lib/config");
     expect(quoteInvoiceSaleLive()).toBe(true);
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "false");
+    const mod = await import("../lib/config");
+    expect(mod.quoteInvoiceSaleLive()).toBe(false);
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "0");
+    const modZero = await import("../lib/config");
+    expect(modZero.quoteInvoiceSaleLive()).toBe(false);
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE", "off");
+    const modOff = await import("../lib/config");
+    expect(modOff.quoteInvoiceSaleLive()).toBe(false);
   });
 
   it("priceLabel defaults to $9", async () => {

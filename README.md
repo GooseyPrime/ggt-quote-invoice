@@ -61,7 +61,7 @@ Route: `/unlock?session_id=…` — unlock when `ok && paid` (or `$0` promo `pay
 
 ### Gate
 
-Checkout is **refused** with `sku_not_live` until `NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=true`. Never fall through to `seo-audit` / `accessibility` pricing.
+Checkout is ON by default. Set `NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE=false|0|off` to refuse checkout with `sku_not_live`. Never fall through to `seo-audit` / `accessibility` pricing.
 
 Env defaults:
 
@@ -69,7 +69,7 @@ Env defaults:
 | --- | --- |
 | `NEXT_PUBLIC_SHOP_ORIGIN` | unset |
 | `NEXT_PUBLIC_PRICE_LABEL` | `$9` |
-| `NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE` | unset / false |
+| `NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE` | unset / true (set `false`/`0`/`off` to disable) |
 
 ## Design kit
 
