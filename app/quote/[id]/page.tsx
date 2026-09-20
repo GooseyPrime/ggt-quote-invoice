@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Nav } from "@/components/Nav";
 import { Paywall } from "@/components/Paywall";
-import { PAYWALL_AFTER_QUOTES } from "@/lib/config";
+import { shouldOfferPaywall } from "@/lib/config";
 import { createId } from "@/lib/ids";
 import {
   formatMoney,
@@ -102,11 +102,8 @@ export default function QuoteEditorPage() {
   function onSave() {
     if (!doc) return;
     setSaveError(null);
-    const before = quoteCount();
-    const had = Boolean(getQuote(doc.id));
-    let isNew = false;
     try {
-      ({ isNew } = saveQuote(doc));
+      saveQuote(doc);
     } catch {
       setSavedFlash(false);
       setShowPaywall(false);
@@ -117,14 +114,7 @@ export default function QuoteEditorPage() {
     window.setTimeout(() => setSavedFlash(false), 1600);
 
     const after = quoteCount();
-    const crossed =
-      !isUnlocked() &&
-      (isNew || (!had && after >= PAYWALL_AFTER_QUOTES)) &&
-      after >= PAYWALL_AFTER_QUOTES &&
-      before < PAYWALL_AFTER_QUOTES;
-
-    // Also show if already at/over threshold after any save while free
-    if (!isUnlocked() && (crossed || after >= PAYWALL_AFTER_QUOTES)) {
+    if (shouldOfferPaywall(isUnlocked(), after)) {
       setShowPaywall(true);
     }
   }

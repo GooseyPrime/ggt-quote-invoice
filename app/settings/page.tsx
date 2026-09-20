@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Nav } from "@/components/Nav";
 import { Paywall } from "@/components/Paywall";
-import { PAYWALL_AFTER_QUOTES, priceLabel } from "@/lib/config";
+import { priceLabel, shouldOfferPaywall } from "@/lib/config";
 import {
   emptyBusiness,
   getBusiness,
@@ -84,75 +84,85 @@ export default function SettingsPage() {
           </p>
         </header>
 
-        {!paid && count >= PAYWALL_AFTER_QUOTES ? <Paywall /> : null}
+        {!paid && shouldOfferPaywall(paid, count) ? <Paywall /> : null}
 
-        {paid ? (
-          <section className="ggt-result">
+        <section className="ggt-result">
+          {!paid ? (
+            <p className="qinv-note">
+              Save your business details now. Unlock once to add a logo and use
+              them on print/PDF.
+            </p>
+          ) : null}
+          <label className="qinv-field">
+            <span className="qinv-label">Business name</span>
+            <input
+              className="ggt-input"
+              value={profile.name}
+              onChange={(e) => patch({ name: e.target.value })}
+            />
+          </label>
+          <label className="qinv-field">
+            <span className="qinv-label">Address</span>
+            <textarea
+              className="qinv-textarea"
+              value={profile.address}
+              onChange={(e) => patch({ address: e.target.value })}
+            />
+          </label>
+          <div className="qinv-grid qinv-grid--2">
             <label className="qinv-field">
-              <span className="qinv-label">Business name</span>
+              <span className="qinv-label">Email</span>
               <input
                 className="ggt-input"
-                value={profile.name}
-                onChange={(e) => patch({ name: e.target.value })}
+                type="email"
+                value={profile.email}
+                onChange={(e) => patch({ email: e.target.value })}
               />
             </label>
             <label className="qinv-field">
-              <span className="qinv-label">Address</span>
-              <textarea
-                className="qinv-textarea"
-                value={profile.address}
-                onChange={(e) => patch({ address: e.target.value })}
+              <span className="qinv-label">Phone</span>
+              <input
+                className="ggt-input"
+                value={profile.phone}
+                onChange={(e) => patch({ phone: e.target.value })}
               />
             </label>
-            <div className="qinv-grid qinv-grid--2">
+          </div>
+          {paid ? (
+            <>
               <label className="qinv-field">
-                <span className="qinv-label">Email</span>
+                <span className="qinv-label">Logo (file → data URL)</span>
                 <input
                   className="ggt-input"
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => patch({ email: e.target.value })}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => onLogoFile(e.target.files?.[0] ?? null)}
                 />
               </label>
               <label className="qinv-field">
-                <span className="qinv-label">Phone</span>
-                <input
-                  className="ggt-input"
-                  value={profile.phone}
-                  onChange={(e) => patch({ phone: e.target.value })}
+                <span className="qinv-label">Logo data URL (optional paste)</span>
+                <textarea
+                  className="qinv-textarea"
+                  value={profile.logoDataUrl}
+                  onChange={(e) => patch({ logoDataUrl: e.target.value })}
+                  placeholder="data:image/png;base64,…"
                 />
               </label>
-            </div>
-            <label className="qinv-field">
-              <span className="qinv-label">Logo (file → data URL)</span>
-              <input
-                className="ggt-input"
-                type="file"
-                accept="image/*"
-                onChange={(e) => onLogoFile(e.target.files?.[0] ?? null)}
-              />
-            </label>
-            <label className="qinv-field">
-              <span className="qinv-label">Logo data URL (optional paste)</span>
-              <textarea
-                className="qinv-textarea"
-                value={profile.logoDataUrl}
-                onChange={(e) => patch({ logoDataUrl: e.target.value })}
-                placeholder="data:image/png;base64,…"
-              />
-            </label>
-            {profile.logoDataUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                className="qinv-logo-preview"
-                src={profile.logoDataUrl}
-                alt="Logo preview"
-              />
-            ) : null}
-            <div className="qinv-actions">
-              <button type="button" className="ggt-btn" onClick={onSave}>
-                Save profile
-              </button>
+              {profile.logoDataUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="qinv-logo-preview"
+                  src={profile.logoDataUrl}
+                  alt="Logo preview"
+                />
+              ) : null}
+            </>
+          ) : null}
+          <div className="qinv-actions">
+            <button type="button" className="ggt-btn" onClick={onSave}>
+              Save profile
+            </button>
+            {paid ? (
               <button
                 type="button"
                 className="ggt-btn qinv-btn--ghost"
@@ -162,14 +172,14 @@ export default function SettingsPage() {
               >
                 Clear logo
               </button>
-            </div>
-            {flash ? <p className="qinv-note">{flash}</p> : null}
-            <p className="ggt-trust">
-              Stored in this browser only. Export a JSON backup from the home
-              page.
-            </p>
-          </section>
-        ) : null}
+            ) : null}
+          </div>
+          {flash ? <p className="qinv-note">{flash}</p> : null}
+          <p className="ggt-trust">
+            Stored in this browser only. Export a JSON backup from the home
+            page.
+          </p>
+        </section>
       </div>
     </main>
   );

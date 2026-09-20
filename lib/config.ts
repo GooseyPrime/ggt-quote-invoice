@@ -59,6 +59,10 @@ export function allowLocalUnlock(env: Env = publicEnv()): boolean {
   return env.NEXT_PUBLIC_ALLOW_LOCAL_UNLOCK === "true" && process.env.NODE_ENV !== "production";
 }
 
+export function shouldOfferPaywall(unlocked: boolean, count: number): boolean {
+  return !unlocked && count >= PAYWALL_AFTER_QUOTES;
+}
+
 export function toolPath(path = "/"): string {
   const nextPath = path.startsWith("/") ? path : `/${path}`;
   return nextPath === "/" ? TOOL_PATH : `${TOOL_PATH}${nextPath}`;

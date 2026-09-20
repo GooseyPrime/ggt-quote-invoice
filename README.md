@@ -44,7 +44,8 @@ Stripe lives **only** in the shop. This tool calls:
 
 ```json
 {
-  "url": "https://goldengoosetools.com/tools/quote-invoice",
+  "url": "https://goldengoosetools.com/tools/quote-invoice/unlock",
+  "returnUrl": "https://goldengoosetools.com/tools/quote-invoice/unlock",
   "product": "quote-invoice",
   "toolId": "quote-invoice"
 }
@@ -66,7 +67,7 @@ Env defaults:
 
 | Variable | Default |
 | --- | --- |
-| `NEXT_PUBLIC_SHOP_ORIGIN` | `https://goldengoosetools.com` |
+| `NEXT_PUBLIC_SHOP_ORIGIN` | unset |
 | `NEXT_PUBLIC_PRICE_LABEL` | `$9` |
 | `NEXT_PUBLIC_QUOTE_INVOICE_SALE_LIVE` | unset / false |
 

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { BackupBanner } from "@/components/BackupBanner";
 import { Nav } from "@/components/Nav";
 import { Paywall } from "@/components/Paywall";
-import { PAYWALL_AFTER_QUOTES, toolPath } from "@/lib/config";
+import { shouldOfferPaywall, toolPath } from "@/lib/config";
 import { formatMoney, grandTotal } from "@/lib/money";
 import {
   createBlankQuote,
@@ -43,7 +43,7 @@ export default function HomePage() {
     }
   }
 
-  const showPaywall = ready && !unlocked && count >= PAYWALL_AFTER_QUOTES;
+  const showPaywall = ready && shouldOfferPaywall(unlocked, count);
 
   return (
     <main className="ggt-root">
