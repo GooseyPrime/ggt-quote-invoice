@@ -1,10 +1,5 @@
 @import "ggt-design-kit/src/index.css";
 
-:root {
-  /* Moss — Quote & Invoice accent */
-  --ggt-accent: #7d9b7a;
-}
-
 html,
 body {
   margin: 0;
@@ -28,7 +23,7 @@ body {
 
 .qinv-nav__link:hover,
 .qinv-nav__link:focus-visible {
-  color: var(--ggt-accent);
+  color: var(--ggt-accent-text, var(--ggt-accent));
 }
 
 .qinv-actions {
@@ -54,7 +49,7 @@ body {
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ggt-accent);
+  color: var(--ggt-accent-text, var(--ggt-accent));
 }
 
 .qinv-banner__body {
@@ -83,7 +78,7 @@ body {
 }
 
 .qinv-list a:hover {
-  color: var(--ggt-accent);
+  color: var(--ggt-accent-text, var(--ggt-accent));
 }
 
 .qinv-meta {
@@ -154,7 +149,7 @@ body {
 }
 
 .qinv-totals strong {
-  color: var(--ggt-accent);
+  color: var(--ggt-accent-text, var(--ggt-accent));
   font-size: 1.1rem;
 }
 
