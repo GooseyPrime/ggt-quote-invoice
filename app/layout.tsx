@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   title: "Golden Goose Tools — Quote & Invoice",
   description:
     "Unlimited free quotes and invoices in the browser. Pay once to brand the print/PDF footer with your logo and business details.",
+  icons: { icon: "https://www.goldengoosetools.com/images/GoldenGooseToolsnb.png" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
