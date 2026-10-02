@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
-      lang="en"
+      lang="en" data-ggt-theme="moss"
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
     >
       <body>{children}</body>
