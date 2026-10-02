@@ -109,6 +109,28 @@ describe("shop gate", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it("unlocks a no-payment-required session for this product", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            ok: true,
+            paymentStatus: "no_payment_required",
+            product: "quote-invoice",
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+    const { verifySale } = await import("../lib/shop");
+    const result = await verifySale("sess_promo");
+    expect(result.ok).toBe(true);
+    expect(result.paid).toBe(true);
+    expect(result.paymentStatus).toBe("no_payment_required");
+  });
+
   it("returns a failed verification result when both verification calls fail", async () => {
     vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
