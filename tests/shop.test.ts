@@ -96,10 +96,10 @@ describe("shop gate", () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ ok: true, paid: true }), { status: 500 }),
+        new Response(JSON.stringify({ ok: true, paid: true, product: "quote-invoice" }), { status: 500 }),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ ok: true, paid: true }), { status: 200 }),
+        new Response(JSON.stringify({ ok: true, paid: true, product: "quote-invoice" }), { status: 200 }),
       );
     vi.stubGlobal("fetch", fetchMock);
     const { verifySale } = await import("../lib/shop");
@@ -107,6 +107,28 @@ describe("shop gate", () => {
     expect(result.ok).toBe(true);
     expect(result.paid).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("unlocks a no-payment-required session for this product", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            ok: true,
+            paymentStatus: "no_payment_required",
+            product: "quote-invoice",
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+    const { verifySale } = await import("../lib/shop");
+    const result = await verifySale("sess_promo");
+    expect(result.ok).toBe(true);
+    expect(result.paid).toBe(true);
+    expect(result.paymentStatus).toBe("no_payment_required");
   });
 
   it("returns a failed verification result when both verification calls fail", async () => {
@@ -136,6 +158,20 @@ describe("shop gate", () => {
     );
     const { verifySale } = await import("../lib/shop");
     const result = await verifySale("sess_123");
+    expect(result.ok).toBe(false);
+    expect(result.paid).toBe(false);
+  });
+
+  it("does not unlock a paid session bought for another product", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SHOP_ORIGIN", "https://shop.example");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ ok: true, paid: true, product: "seo-audit" }), { status: 200 }),
+      ),
+    );
+    const { verifySale } = await import("../lib/shop");
+    const result = await verifySale("sess_other");
     expect(result.ok).toBe(false);
     expect(result.paid).toBe(false);
   });
